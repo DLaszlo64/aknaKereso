@@ -1,8 +1,10 @@
-﻿namespace aknakereso
+﻿using System.Linq;
+
+namespace aknakereso
 {
     internal class Program
     {
-        // 💡 ÚJ KONSTANS: Meghatározza a tábla maximális méretét (20x20)
+        // 💡 KONSTANS: Meghatározza a tábla maximális méretét (20x20)
         private const int MAX_BOARD_SIZE = 20;
 
         // =================================================================
@@ -26,8 +28,7 @@
                 Console.ResetColor();
 
                 // 1. Játék beállításai és inicializálás
-                // A prompt üzenet kiegészül a maximális mérettel
-                int size = GetValidSizeInput($"Add meg a tábla méretét (pl. 8, minimum 2, maximum {MAX_BOARD_SIZE}): ", 2);
+                int size = GetValidSizeInput($"Add meg a tábla méretét (min. 2, max. {MAX_BOARD_SIZE}): ", 2);
                 int mineCount = GetValidMineCountInput(size);
 
                 char[,] board = new char[size, size];
@@ -38,10 +39,7 @@
                 int placedFlags = 0;
                 bool gameOver = false;
 
-                // Aknák elhelyezése a táblán
                 InitializeMines(mines, mineCount);
-
-                // Tábla inicializálása felfedetlen mezőkkel ('#')
                 InitializeBoard(board);
 
                 // 2. Fő játékciklus futtatása
@@ -63,7 +61,7 @@
         // =================================================================
 
         /// <summary>
-        /// Bekéri a tábla méretét, és addig ismétli, amíg érvényes, minimumnál nagyobb és maximumnál kisebb/egyenlő számot nem kap.
+        /// Bekéri a tábla méretét, és validálja a bemenetet a minimum és maximum korlátok között.
         /// </summary>
         private static int GetValidSizeInput(string prompt, int min)
         {
@@ -72,7 +70,7 @@
             do
             {
                 Console.Write(prompt);
-                // 💡 MÓDOSÍTÁS: Ellenőrzi, hogy a bemenet legfeljebb 'MAX_BOARD_SIZE'
+                // Ellenőrzi: érvényes szám-e, min >= 2, max <= 20
                 valid = int.TryParse(Console.ReadLine(), out value) && value >= min && value <= MAX_BOARD_SIZE;
                 if (!valid)
                 {
@@ -85,7 +83,7 @@
         }
 
         /// <summary>
-        /// Bekéri az aknák számát, ellenőrizve, hogy 1 és a maximális méret között van-e.
+        /// Bekéri az aknák számát, biztosítva, hogy legalább 1 legyen és ne fedje le az egész táblát.
         /// </summary>
         private static int GetValidMineCountInput(int size)
         {
@@ -95,6 +93,7 @@
             do
             {
                 Console.Write($"Add meg az aknák számát (1 - {maxSize - 1}): ");
+                // Ellenőrzi: érvényes szám-e, 1 <= szám < maximális mezőszám
                 valid = int.TryParse(Console.ReadLine(), out mineCount) && mineCount >= 1 && mineCount < maxSize;
                 if (!valid)
                 {
@@ -107,7 +106,7 @@
         }
 
         /// <summary>
-        /// Bekéri, hogy a felhasználó szeretne-e új játékot. Csak "Igen" vagy "Nem" válaszokat fogad el.
+        /// Bekéri, hogy a felhasználó szeretne-e új játékot (Igen/Nem validáció).
         /// </summary>
         private static bool AskForNewGame()
         {
@@ -133,7 +132,7 @@
         // =================================================================
 
         /// <summary>
-        /// Elhelyezi az aknákat véletlenszerűen a táblán.
+        /// Elhelyezi az aknákat véletlenszerűen a táblán (bool[,] mines).
         /// </summary>
         private static void InitializeMines(bool[,] mines, int count)
         {
@@ -168,7 +167,7 @@
         // =================================================================
 
         /// <summary>
-        /// Futtatja a fő játékhurkot, amíg a játék véget nem ér (nyerés, vesztés, kilépés).
+        /// Futtatja a fő játékhurkot.
         /// </summary>
         private static void RunGameLoop(char[,] board, bool[,] mines, bool[,] flags, int size, int mineCount, ref int revealed, ref int placedFlags, ref bool gameOver)
         {
@@ -187,7 +186,7 @@
                 // Beolvassa a felhasználó lépését és feldolgozza azt.
                 if (!HandlePlayerMove(board, mines, flags, size, ref revealed, ref placedFlags, ref gameOver, mineCount))
                 {
-                    // Ha a HandlePlayerMove false-szal tér vissza, azt jelenti, hogy a felhasználó 0-val kilépett.
+                    // Ha a HandlePlayerMove false-szal tér vissza, a felhasználó '0'-val kilépett.
                     break;
                 }
             }
@@ -196,7 +195,7 @@
         /// <summary>
         /// Kezeli a mód (R/F) és a koordináták beolvasását és validálását.
         /// </summary>
-        /// <returns>Igaz, ha a lépés feldolgozásra került, Hamis, ha a felhasználó kilépett ('0').</returns>
+        /// <returns>Igaz, ha a lépés feldolgozásra került; Hamis, ha a felhasználó kilépett ('0').</returns>
         private static bool HandlePlayerMove(char[,] board, bool[,] mines, bool[,] flags, int size, ref int revealed, ref int placedFlags, ref bool gameOver, int mineCount)
         {
             string mode;
@@ -210,7 +209,7 @@
                 Console.Write("Választott mód (R/F/0): ");
                 mode = Console.ReadLine()?.Trim().ToUpper();
 
-                if (mode == "0") return false; // Kilépés
+                if (mode == "0") return false;
 
                 validInput = mode == "R" || mode == "F";
                 if (!validInput)
@@ -221,7 +220,7 @@
                 }
             } while (!validInput);
 
-            // 2. Sor beolvasása
+            // 2. Sor beolvasása (Koordináta érvényesítése)
             do
             {
                 validInput = true;
@@ -233,7 +232,7 @@
                     Console.ResetColor();
                     validInput = false;
                 }
-                else if (row == 0) return false; // Kilépés
+                else if (row == 0) return false;
                 else if (row < 1 || row > size)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -243,7 +242,7 @@
                 }
             } while (!validInput);
 
-            // 3. Oszlop beolvasása
+            // 3. Oszlop beolvasása (Koordináta érvényesítése)
             do
             {
                 validInput = true;
@@ -255,7 +254,7 @@
                     Console.ResetColor();
                     validInput = false;
                 }
-                else if (col == 0) return false; // Kilépés
+                else if (col == 0) return false;
                 else if (col < 1 || col > size)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -265,7 +264,7 @@
                 }
             } while (!validInput);
 
-            // Koordináták feldolgozása
+            // A mozgás feldolgozása a 0-alapú indexekkel
             ProcessMove(board, mines, flags, row - 1, col - 1, mode, ref revealed, ref placedFlags, ref gameOver, mineCount);
             return true;
         }
@@ -277,40 +276,59 @@
         {
             int maxSize = board.GetLength(0) * board.GetLength(0);
 
-            // Ha a mező zászlós, a mozgás elutasítva.
-            if (flags[row, col] && mode == "R")
+            // 🔹 Zászlózás mód kezelése (mode == "F")
+            if (mode == "F")
             {
+                string message = "";
+                ConsoleColor color = ConsoleColor.White;
+
+                if (board[row, col] != '#' && !flags[row, col])
+                {
+                    message = "❌ Nem tehetsz zászlót felfedett mezőre!";
+                    color = ConsoleColor.Red;
+                }
+                else if (flags[row, col])
+                {
+                    // Zászló eltávolítása
+                    flags[row, col] = false;
+                    placedFlags--;
+                    message = "🚩 A zászló eltávolítva a területről.";
+                    color = ConsoleColor.Yellow;
+                }
+                else if (placedFlags < mineCount)
+                {
+                    // Zászló elhelyezése
+                    flags[row, col] = true;
+                    placedFlags++;
+                    message = "🚩 A terület meg lett jelölve zászlóval.";
+                    color = ConsoleColor.Green;
+                }
+                else
+                {
+                    // Hiba: Túl sok zászló
+                    message = "❌ Elérted a maximális zászlószámot!";
+                    color = ConsoleColor.Red;
+                }
+
+                // 💡 MÓDOSÍTÁS: Üzenet kijelzése és gombnyomás megvárása
+                Console.ForegroundColor = color;
+                Console.WriteLine(message);
+                Console.WriteLine("Nyomj meg egy gombot a folytatáshoz...");
+                Console.ResetColor();
+                Console.ReadKey();
+                return;
+            }
+
+            // 🔹 Felfedés mód kezelése (mode == "R")
+
+            if (flags[row, col])
+            {
+                // Hiba: Zászlós mező felfedése
                 Console.WriteLine("Előbb vedd le a zászlót erről a mezőről!");
                 Console.ReadKey();
                 return;
             }
 
-            if (mode == "F")
-            {
-                // Zászlózás/Zászló eltávolítása
-                if (board[row, col] != '#' && !flags[row, col])
-                {
-                    Console.WriteLine("Nem tehetsz zászlót felfedett mezőre!");
-                }
-                else if (flags[row, col])
-                {
-                    flags[row, col] = false;
-                    placedFlags--;
-                }
-                else if (placedFlags < mineCount)
-                {
-                    flags[row, col] = true;
-                    placedFlags++;
-                }
-                else
-                {
-                    Console.WriteLine("Elérted a maximális zászlószámot!");
-                }
-                Console.ReadKey();
-                return;
-            }
-
-            // Felfedés mód (mode == "R")
             if (mines[row, col])
             {
                 // Akna eltalálva - Vége a játéknak!
@@ -327,7 +345,7 @@
 
                 if (revealed == maxSize - mineCount)
                 {
-                    // Nyerés!
+                    // Nyerés feltétel: minden nem-akna mező fel van fedve.
                     Console.Clear();
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("🎉 Gratulálok, nyertél!");
@@ -337,7 +355,7 @@
             }
             else
             {
-                // Már felfedett mezőre kattintás
+                // Már felfedett mezőre kattintás (UI feedback)
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("⚠️ Ezt a mezőt már felfedted!");
                 Console.WriteLine("Nyomj meg egy gombot a játék folytatásához...");
@@ -352,16 +370,12 @@
         // =================================================================
 
         /// <summary>
-        /// Megjeleníti a játék végi eredményeket és az aknák helyét.
+        /// Megjeleníti a játék végi eredményeket és az aknák helyét (csak veszteség/nyerés esetén).
         /// </summary>
         private static void DisplayEndGame(bool[,] mines, char[,] board, bool gameOver)
         {
             int size = mines.GetLength(0);
-            if (!gameOver) // Ha manuális kilépés történt (0-val), csak a kilépés üzenetet írjuk ki.
-            {
-                Console.WriteLine("\nKilépés a játékból.");
-                return;
-            }
+            if (!gameOver) return; // Ha manuális kilépés történt (0-val), itt nem csinál semmit.
 
             Console.WriteLine("\nAknák helyei:");
             for (int i = 0; i < size; i++)
@@ -385,7 +399,7 @@
         }
 
         /// <summary>
-        /// Kiszámolja a szomszédos aknák számát.
+        /// Kiszámolja a szomszédos aknák számát (segédfüggvény a felfedéshez).
         /// </summary>
         private static int CountNearbyMines(bool[,] mines, int row, int col)
         {
@@ -402,7 +416,7 @@
         }
 
         /// <summary>
-        /// Rekurzívan felfedez üres mezőket és szomszédjaikat (autómatikus felfedés).
+        /// Rekurzívan felfedez üres mezőket és szomszédjaikat (autómatikus felfedés, 'cascade').
         /// </summary>
         private static void RevealEmpty(char[,] board, bool[,] mines, int row, int col, ref int revealed)
         {
@@ -443,7 +457,7 @@
                     if (flags[i, j])
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Write("🚩 "); // Zászló
+                        Console.Write("🚩 ");
                         Console.ResetColor();
                         continue;
                     }
