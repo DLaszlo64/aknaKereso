@@ -16,16 +16,45 @@
                 Console.WriteLine("=== 🎯 AKNAKERESŐ ===\n");
                 Console.ResetColor();
 
-                // 🔹 Pálya beállítása (Újra megkérdezi minden játéknál)
-                Console.Write("Add meg a tábla méretét (pl. 8): ");
-                int size = int.TryParse(Console.ReadLine(), out int s) && s > 1 ? s : 8;
+                // 🔹 Pálya méretének beolvasása 🔄
+                int size;
+                bool validSize;
+                do
+                {
+                    Console.Write("Add meg a tábla méretét (pl. 8, minimum 2): ");
+                    // ELLENŐRZÉS: Helyes számformátum és érvényes érték
+                    validSize = int.TryParse(Console.ReadLine(), out size) && size >= 2;
+                    if (!validSize)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("❌ Helytelen bemenet! Kérlek adj meg egy számot, ami legalább 2.");
+                        Console.ResetColor();
+                    }
+                } while (!validSize);
 
-                Console.Write("Add meg az aknák számát: ");
-                int mineCount = int.TryParse(Console.ReadLine(), out int m) && m > 0 && m < size * size ? m : size;
+
+                // 🔹 Aknák számának beolvasása 🔄
+                int mineCount;
+                int maxSize = size * size;
+                bool validMineCount;
+                do
+                {
+                    Console.Write($"Add meg az aknák számát (1 - {maxSize - 1}): ");
+                    // ELLENŐRZÉS: Helyes számformátum és érvényes érték
+                    validMineCount = int.TryParse(Console.ReadLine(), out mineCount) && mineCount >= 1 && mineCount < maxSize;
+                    if (!validMineCount)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"❌ Helytelen bemenet! Kérlek adj meg egy számot 1 és {maxSize - 1} között.");
+                        Console.ResetColor();
+                    }
+                } while (!validMineCount);
+
+                // --- Játék inicializálása ---
 
                 char[,] board = new char[size, size];
                 bool[,] mines = new bool[size, size];
-                bool[,] flags = new bool[size, size]; // Zászlók tárolása
+                bool[,] flags = new bool[size, size];
 
                 bool gameOver = false;
                 int revealed = 0;
@@ -56,27 +85,63 @@
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine("=== 🎯 AKNAKERESŐ ===");
                     Console.ResetColor();
-                    Console.WriteLine($"Méret: {size}x{size} | Aknák: {mineCount} | Zászlók: {placedFlags}/{mineCount} | Felfedett: {revealed}/{size * size - mineCount}\n");
+                    Console.WriteLine($"Méret: {size}x{size} | Aknák: {mineCount} | Zászlók: {placedFlags}/{mineCount} | Felfedett: {revealed}/{maxSize - mineCount}\n");
 
                     DrawBoard(board, flags);
 
-                    // 💡 Kilépési opció
-                    Console.WriteLine("\n(Lépéshez: 'R' = felfedés, 'F' = zászlózás | Kilépéshez a módnál VAGY a koordinátáknál írj be '0'-t)");
-                    Console.Write("Választott mód (R/F/0): ");
-                    string mode = Console.ReadLine()?.Trim().ToUpper();
+                    string mode;
+                    int row, col;
+                    bool validInput = false;
 
-                    // Kilépés 0 beírására a mód választásakor
-                    if (mode == "0")
+                    // 🔹 Mód beolvasása (R/F/0) 🔄
+                    do
                     {
-                        gameOver = true;
-                        Console.WriteLine("\nKilépés a játékból.");
-                        break;
-                    }
+                        Console.WriteLine("\n(Lépéshez: 'R' = felfedés, 'F' = zászlózás | Kilépéshez írj be '0'-t)");
+                        Console.Write("Választott mód (R/F/0): ");
+                        mode = Console.ReadLine()?.Trim().ToUpper();
 
-                    if (mode != "R" && mode != "F") continue;
+                        // Kilépés 0 beírására a mód választásakor
+                        if (mode == "0")
+                        {
+                            gameOver = true;
+                            validInput = true;
+                            break;
+                        }
 
-                    Console.Write("Sor (1–{0}): ", size);
-                    if (!int.TryParse(Console.ReadLine(), out int row) || row < 0 || row > size) continue;
+                        validInput = mode == "R" || mode == "F";
+                        if (!validInput)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("❌ Helytelen mód! Kérlek írj be R, F vagy 0-t.");
+                            Console.ResetColor();
+                        }
+                    } while (!validInput);
+
+                    if (mode == "0") break; // Kilépés az inner while ciklusból
+
+                    // 🔹 Sor beolvasása 🔄
+                    do
+                    {
+                        Console.Write("Sor (1–{0} vagy 0 a kilépéshez): ", size);
+                        if (!int.TryParse(Console.ReadLine(), out row))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("❌ Helytelen bemenet! Kérlek **számot** adj meg.");
+                            Console.ResetColor();
+                            validInput = false;
+                        }
+                        else if (row < 0 || row > size)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"❌ Érvénytelen sorszám. Kérlek adj meg 1 és {size} közötti számot, vagy 0-t.");
+                            Console.ResetColor();
+                            validInput = false;
+                        }
+                        else
+                        {
+                            validInput = true;
+                        }
+                    } while (!validInput);
 
                     // Kilépés 0 beírására
                     if (row == 0)
@@ -86,8 +151,29 @@
                         break;
                     }
 
-                    Console.Write("Oszlop (1–{0}): ", size);
-                    if (!int.TryParse(Console.ReadLine(), out int col) || col < 0 || col > size) continue;
+                    // 🔹 Oszlop beolvasása 🔄
+                    do
+                    {
+                        Console.Write("Oszlop (1–{0} vagy 0 a kilépéshez): ", size);
+                        if (!int.TryParse(Console.ReadLine(), out col))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("❌ Helytelen bemenet! Kérlek **számot** adj meg.");
+                            Console.ResetColor();
+                            validInput = false;
+                        }
+                        else if (col < 0 || col > size)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"❌ Érvénytelen oszlopszám. Kérlek adj meg 1 és {size} közötti számot, vagy 0-t.");
+                            Console.ResetColor();
+                            validInput = false;
+                        }
+                        else
+                        {
+                            validInput = true;
+                        }
+                    } while (!validInput);
 
                     // Kilépés 0 beírására
                     if (col == 0)
@@ -97,11 +183,11 @@
                         break;
                     }
 
-                    row--; col--;
+                    row--; col--; // 0-alapú indexelés
 
+                    // 🔹 Zászlózás mód
                     if (mode == "F")
                     {
-                        // 🔹 Zászlózás mód
                         if (board[row, col] != '#' && !flags[row, col])
                         {
                             Console.WriteLine("Nem tehetsz zászlót felfedett mezőre!");
@@ -147,7 +233,7 @@
                     {
                         RevealEmpty(board, mines, row, col, ref revealed);
 
-                        if (revealed == size * size - mineCount)
+                        if (revealed == maxSize - mineCount)
                         {
                             Console.Clear();
                             Console.ForegroundColor = ConsoleColor.Green;
@@ -156,9 +242,12 @@
                             gameOver = true;
                         }
                     }
-                    else
+                    else // 💡 MÓDOSÍTÁS: Ha a mező már fel van fedve (nem akna és nem is '#')
                     {
-                        Console.WriteLine("Ezt a mezőt már felfedted!");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("⚠️ Ezt a mezőt már felfedted!");
+                        Console.WriteLine("Nyomj meg egy gombot a játék folytatásához...");
+                        Console.ResetColor();
                         Console.ReadKey();
                     }
                 }
@@ -186,12 +275,31 @@
                     Console.WriteLine();
                 }
 
-                Console.WriteLine("\n------------------------------------------------");
-                Console.Write("Szeretnél új játékot kezdeni? (Igen/Nem): ");
-                string choice = Console.ReadLine()?.Trim().ToUpper();
+                // 🔹 Újrajátszás kérdése (Ellenőrzéssel) 🔄
+                string choice;
+                do
+                {
+                    Console.WriteLine("\n------------------------------------------------");
+                    Console.Write("Szeretnél új játékot kezdeni? (Igen/Nem): ");
+                    choice = Console.ReadLine()?.Trim().ToUpper();
 
-                // A 'playAgain' beállítása a következő ciklushoz
-                playAgain = choice == "I" || choice == "IGEN";
+                    if (choice == "I" || choice == "IGEN")
+                    {
+                        playAgain = true;
+                        break;
+                    }
+                    else if (choice == "N" || choice == "NEM")
+                    {
+                        playAgain = false;
+                        break;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("❌ Helytelen bemenet! Kérlek 'Igen' vagy 'Nem' (vagy I/N) választ adj.");
+                        Console.ResetColor();
+                    }
+                } while (true); // Végtelen ciklus, amíg érvényes választ nem kap
 
                 if (!playAgain)
                 {
