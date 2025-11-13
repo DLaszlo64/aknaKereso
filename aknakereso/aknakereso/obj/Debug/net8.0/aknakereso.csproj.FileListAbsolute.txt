@@ -12,3 +12,18 @@ C:\Users\horado687\source\repos\aknakereso\aknakereso\obj\Debug\net8.0\refint\ak
 C:\Users\horado687\source\repos\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.pdb
 C:\Users\horado687\source\repos\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.genruntimeconfig.cache
 C:\Users\horado687\source\repos\aknakereso\aknakereso\obj\Debug\net8.0\ref\aknakereso.dll
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\bin\Debug\net8.0\aknakereso.exe
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\bin\Debug\net8.0\aknakereso.deps.json
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\bin\Debug\net8.0\aknakereso.runtimeconfig.json
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\bin\Debug\net8.0\aknakereso.dll
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\bin\Debug\net8.0\aknakereso.pdb
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.AssemblyInfoInputs.cache
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.AssemblyInfo.cs
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.csproj.CoreCompileInputs.cache
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.sourcelink.json
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.dll
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\refint\aknakereso.dll
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.pdb
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\aknakereso.genruntimeconfig.cache
+C:\Users\doblas344\OneDrive - BGSzC Pestszentlőrinci Technikum\aknaProjekt\aknaKereso\aknakereso\aknakereso\obj\Debug\net8.0\ref\aknakereso.dll
